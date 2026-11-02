@@ -1,11 +1,11 @@
 public class ControladorAlmacenamiento {
     private MaquinaVirtual[] duenos;
-    private int tamPaginaKB;
+    private int tamBloqueKB;
     private int libres;
 
-    public ControladorAlmacenamiento(long almacenamientoTotalKB, int tamPaginaKB) {
-        this.tamPaginaKB = tamPaginaKB;
-        int totalBloques = (int) (almacenamientoTotalKB / tamPaginaKB);
+    public ControladorAlmacenamiento(long almacenamientoTotalKB, int tamBloqueKB) {
+        this.tamBloqueKB = tamBloqueKB;
+        int totalBloques = (int) (almacenamientoTotalKB / tamBloqueKB);
 
         this.duenos = new MaquinaVirtual[totalBloques];
         this.libres = totalBloques;
@@ -45,9 +45,9 @@ public class ControladorAlmacenamiento {
 
     public synchronized int bloquesNecesarios(int almacenamientoGIB) {
         long almacenamientoKB = (long) almacenamientoGIB * 1024 * 1024;
-        long bloques = almacenamientoKB / tamPaginaKB;
+        long bloques = almacenamientoKB / tamBloqueKB;
 
-        if (almacenamientoKB % tamPaginaKB != 0) {
+        if (almacenamientoKB % tamBloqueKB != 0) {
             bloques++;
         }
 

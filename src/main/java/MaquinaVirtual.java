@@ -5,6 +5,8 @@ public class MaquinaVirtual extends Thread {
     private ControladorMemoria ctrlMemoria;
     private ControladorAlmacenamiento ctrlAlmacenamiento;
     private ZonaDeEspera zonaEspera;
+    private static final int Tiempo_min = 4000;
+    private static final int Tiempo_max = 40000;
 
     public MaquinaVirtual(
             Solicitud solicitud,
@@ -21,18 +23,53 @@ public class MaquinaVirtual extends Thread {
 
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not implemented");
+        boolean config = false;
+        while (!config) {
+            int versionActual = zonaEspera.getVersion();
+            config = reservarRecursos();
+            if (!config) {
+                zonaEspera.esperar(this, versionActual);
+            }
+        }
+        ejecutar();
+        liberarRecursos();
+        zonaEspera.despertar();
     }
 
     public boolean reservarRecursos() {
-        throw new UnsupportedOperationException("Not implemented");
+        boolean procesadoresReservados = ctrlProcesadores.reservar(solicitud.getProcesadores(), this);
+        if (!procesadoresReservados) {
+            return false;
+        }
+
+        boolean memoriaReservada = ctrlMemoria.reservar(solicitud.getMemoriaGIB(), this);
+        if (!memoriaReservada) {
+            ctrlProcesadores.liberar(this);
+            return false;
+        }
+
+        boolean almacenamientoReservado = ctrlAlmacenamiento.reservar(solicitud.getAlmacenamientoGIB(), this);
+        if (!almacenamientoReservado) {
+            ctrlProcesadores.liberar(this);
+            ctrlMemoria.liberar(this);
+            return false;
+        }
+
+        return true;
     }
 
     public void liberarRecursos() {
-        throw new UnsupportedOperationException("Not implemented");
+        ctrlProcesadores.liberar(this);
+        ctrlMemoria.liberar(this);
+        ctrlAlmacenamiento.liberar(this);
     }
 
     public void ejecutar() {
-        throw new UnsupportedOperationException("Not implemented");
+        int duracion = Tiempo_min + new java.util.Random().nextInt(Tiempo_max - Tiempo_min + 1);
+        try {
+            Thread.sleep(duracion);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

@@ -1,27 +1,70 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class ZonaDeEspera {
     private List<MaquinaVirtual> mvsEnEspera;
     private int umbral;
+    private int version;
 
-    public ZonaDeEspera(List<MaquinaVirtual> mvsEnEspera, int umbral) {
-        this.mvsEnEspera = mvsEnEspera;
+    public ZonaDeEspera(int umbral) {
+        this.mvsEnEspera = new ArrayList<>();
         this.umbral = umbral;
+        this.version = 0;
     }
 
-    public synchronized void esperar(MaquinaVirtual mv) {
-        throw new UnsupportedOperationException("Not implemented");
+    public synchronized void esperar(MaquinaVirtual mv, int versionActual) {
+        mvsEnEspera.add(mv);
+
+        while (version == versionActual) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                mvsEnEspera.remove(mv);
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+
+        mvsEnEspera.remove(mv);
+        if (mvsEnEspera.isEmpty()) {
+            notifyAll();
+        }
+
+    }
+
+    public synchronized int getVersion() {
+        return version;
     }
 
     public synchronized void despertar() {
-        throw new UnsupportedOperationException("Not implemented");
+        version++;
+        notifyAll();
+    }
+
+    public synchronized boolean hayMVsEnEspera() {
+        return !mvsEnEspera.isEmpty();
+    }
+
+    public synchronized int getUmbral() {
+        return umbral;
     }
 
     public synchronized int cantidadEnEspera() {
-        throw new UnsupportedOperationException("Not implemented");
+        return mvsEnEspera.size();
     }
 
     public synchronized void esperarQueQuedeVacio() {
-        throw new UnsupportedOperationException("Not implemented");
+        while(!mvsEnEspera.isEmpty()) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+    }
+
+    public synchronized boolean estaSaturada() {
+        return mvsEnEspera.size() >= umbral;
     }
 }
