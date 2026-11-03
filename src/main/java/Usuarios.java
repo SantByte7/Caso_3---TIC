@@ -22,11 +22,17 @@ public class Usuarios extends Thread {
 
     @Override
     public void run() {
-        for (int i = 0; i < numSolicitudes; i++) {
-            Solicitud s = generarSolicitud(i);
-            buzon.depositar(s);   
+        try {
+            for (int i = 0; i < numSolicitudes; i++) {
+                Solicitud s = generarSolicitud(i);
+                if (!buzon.depositar(s)) {
+                    return;
+                }
+            }
+        } finally {
+            // El buzón siempre debe conocer que este productor terminó.
+            buzon.reportarTerminacion();
         }
-        buzon.reportarTerminacion();
     }
 
     public Solicitud generarSolicitud(int secuencial) {

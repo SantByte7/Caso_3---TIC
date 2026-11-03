@@ -33,15 +33,16 @@ public class MaquinaVirtual extends Thread {
         boolean recursosReservados = false;
 
         try {
-            synchronized (zonaEspera) {
-                while (!recursosDisponibles() && !Thread.currentThread().isInterrupted()) {
-                    int versionActual = zonaEspera.getVersion();
-                    zonaEspera.esperar(this, versionActual);
+            while (!recursosReservados && !Thread.currentThread().isInterrupted()) {
+                synchronized (zonaEspera) {
+                    recursosReservados = reservarRecursos();
+                    if (!recursosReservados) {
+                        int versionActual = zonaEspera.getVersion();
+                        if (!zonaEspera.esperar(this, versionActual)) {
+                            return;
+                        }
+                    }
                 }
-                if (Thread.currentThread().isInterrupted()) {
-                    return;
-                }
-                recursosReservados = reservarRecursos();
             }
 
             if (!recursosReservados) {
@@ -57,16 +58,6 @@ public class MaquinaVirtual extends Thread {
                 }
             }
         }
-    }
-
-    private boolean recursosDisponibles() {
-        int paginasNecesarias = ctrlMemoria.paginasNecesarias(solicitud.getMemoriaGIB());
-
-        int bloquesNecesarios = ctrlAlmacenamiento.bloquesNecesarios(solicitud.getAlmacenamientoGIB());
-
-        return ctrlProcesadores.getLibres() >= solicitud.getProcesadores()
-                && ctrlMemoria.getLibres() >= paginasNecesarias
-                && ctrlAlmacenamiento.getLibres() >= bloquesNecesarios;
     }
 
     public boolean reservarRecursos() {

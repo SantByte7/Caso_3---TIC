@@ -38,7 +38,6 @@ public class ControladorProcesador {
     }
 
     public int getCapacidadTotal() {
-        // TODO Auto-generated method stub
         return duenos.length;
     }
 }

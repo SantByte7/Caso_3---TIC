@@ -55,7 +55,6 @@ public class ControladorAlmacenamiento {
     }
 
     public int getCapacidadTotal() {
-        // TODO Auto-generated method stub
         return duenos.length;
     }
 }

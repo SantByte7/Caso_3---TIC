@@ -6,6 +6,8 @@ public class BuzonDeEntrada {
     private final Queue<Solicitud> cola;
     private final int capacidad;
     private int usuariosActivos;
+    private long solicitudesDepositadas;
+    private long solicitudesRetiradas;
 
     public BuzonDeEntrada(int capacidad, int usuariosActivos) {
         this.cola = new LinkedList<>();
@@ -13,17 +15,19 @@ public class BuzonDeEntrada {
         this.usuariosActivos = usuariosActivos;
     }
 
-    public synchronized void depositar(Solicitud s) {
+    public synchronized boolean depositar(Solicitud s) {
         while (cola.size() >= capacidad) {
             try {
                 wait();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                return;
+                return false;
             }
         }
         cola.add(s);
-        
+        solicitudesDepositadas++;
+        notifyAll();
+        return true;
     }
 
     public synchronized Solicitud retirar() {
@@ -31,6 +35,7 @@ public class BuzonDeEntrada {
             return null;
         }
         Solicitud solicitud = cola.remove();
+        solicitudesRetiradas++;
         notifyAll();
         return solicitud;
     }
@@ -49,7 +54,19 @@ public class BuzonDeEntrada {
         return usuariosActivos > 0;
     }
 
+    public synchronized boolean terminado() {
+        return cola.isEmpty() && usuariosActivos == 0;
+    }
+
     public synchronized boolean estaVacio() {
         return cola.isEmpty();
+    }
+
+    public synchronized long getSolicitudesDepositadas() {
+        return solicitudesDepositadas;
+    }
+
+    public synchronized long getSolicitudesRetiradas() {
+        return solicitudesRetiradas;
     }
 }

@@ -41,6 +41,15 @@ public class Main {
         long memoriaTotalKB = (long) memoriaGiB * 1024 * 1024;
         long almacenamientoTotalKB = (long) almacenamientoGiB * 1024 * 1024;
 
+        if (memoriaTotalKB % tampaginaKiB != 0) {
+            System.err.println("La memoria debe ser múltiplo del tamaño de página.");
+            return;
+        }
+        if (almacenamientoTotalKB % tambloqueKiB != 0) {
+            System.err.println("El almacenamiento debe ser múltiplo del tamaño de bloque.");
+            return;
+        }
+
         long totalPaginas = memoriaTotalKB / tampaginaKiB;
         long totalBloques = almacenamientoTotalKB / tambloqueKiB;
 
@@ -90,7 +99,7 @@ public class Main {
         
 
         List<GestorDeSolicitud> gestores = new ArrayList<>();
-        for (int i = 0; i < ng; i++) {
+        for (int i = 1; i <= ng; i++) {
             gestores.add(new GestorDeSolicitud(i, buzon, zonaEspera, controladorProcesador, controladorMemoria, controladorAlmacenamiento));
         }
 
@@ -116,8 +125,19 @@ public class Main {
         }
 
         boolean ok = true;
+        long solicitudesEsperadas = (long) base * nu * (nu + 1) / 2;
         if (!buzon.estaVacio()) {
             System.out.println("FALLO: el buzón no quedó vacío.");
+            ok = false;
+        }
+        if (buzon.getSolicitudesDepositadas() != solicitudesEsperadas
+                || buzon.getSolicitudesRetiradas() != solicitudesEsperadas) {
+            System.out.println(
+                    "FALLO: solicitudes procesadas "
+                    + buzon.getSolicitudesRetiradas()
+                    + " de "
+                    + solicitudesEsperadas
+            );
             ok = false;
         }
         if (zonaEspera.cantidadEnEspera() != 0) {

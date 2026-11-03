@@ -37,15 +37,11 @@ public class GestorDeSolicitud extends Thread {
             Solicitud sol = buzon.retirar();
 
             if (sol == null) {
-                if (!buzon.hayUsuariosActivos()) {
-                    sol = buzon.retirar();
-                    if (sol == null) {
-                        seguir = false;
-                    }
+                if (buzon.terminado()) {
+                    seguir = false;
                 } else {
                     Thread.yield();
                 }
-                
             }
 
             if (sol != null) {
