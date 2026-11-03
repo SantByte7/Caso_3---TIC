@@ -39,8 +39,12 @@ public class Main {
         int limiteAlmacenamiento = generarLimite((int) totalBloques);
  
         int umbral = tam2;
-
-        BuzonDeEntrada buzon = new BuzonDeEntrada(nu, base);
+        
+        if (tam1 <= 0) {
+            System.err.println("tam1 debe ser mayor que cero.");
+            return;
+        }
+        BuzonDeEntrada buzon = new BuzonDeEntrada(tam1, nu);
         ZonaDeEspera zonaEspera = new ZonaDeEspera(umbral);
         ControladorProcesador controladorProcesador = new ControladorProcesador(procesadores);
         ControladorMemoria controladorMemoria = new ControladorMemoria(memoriaTotalKB, tampaginaKiB);
