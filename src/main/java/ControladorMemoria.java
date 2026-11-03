@@ -54,4 +54,9 @@ public class ControladorMemoria {
 
         return (int) paginas;
     }
+
+    public int getCapacidadTotal() {
+        // TODO Auto-generated method stub
+        return duenos.length;
+    }
 }

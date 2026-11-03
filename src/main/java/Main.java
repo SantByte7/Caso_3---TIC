@@ -10,6 +10,10 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        if (args.length != 1) {
+            System.err.println("Uso: java Main <archivo_configuracion>");
+            return;
+        }
         Properties config = leerConfiguracion(args[0]);
 
         int nu = leerEntero(config, "NU");
@@ -23,27 +27,50 @@ public class Main {
         int almacenamientoGiB = leerEntero(config, "almacenamientoGiB");
         int tambloqueKiB = leerEntero(config, "tambloqueKiB");
 
+        validarMayorACero(nu, "NU");
+        validarMayorACero(base, "base");   
+        validarMayorACero(ng, "NG");
+        validarMayorACero(tam1, "tam1");
+        validarMayorACero(tam2, "tam2");
+        validarMayorACero(procesadores, "procesadores");
+        validarMayorACero(memoriaGiB, "memoriaGiB");
+        validarMayorACero(tampaginaKiB, "tamPaginaKB");
+        validarMayorACero(almacenamientoGiB, "almacenamientoGiB");
+        validarMayorACero(tambloqueKiB, "tambloqueKiB");
+
         long memoriaTotalKB = (long) memoriaGiB * 1024 * 1024;
         long almacenamientoTotalKB = (long) almacenamientoGiB * 1024 * 1024;
 
         long totalPaginas = memoriaTotalKB / tampaginaKiB;
         long totalBloques = almacenamientoTotalKB / tambloqueKiB;
-        
+
         if (totalPaginas < 1 || totalBloques < 1) {
-            System.err.println("La memoria o el almacenamiento son demasiado pequeños para el tamaño de página/bloque especificado.");
+            System.err.println(
+                "La memoria o el almacenamiento son demasiado pequeños para "
+                + "el tamaño de página/bloque especificado."
+            );
             return;
         }
 
-        int limiteProcesadores = generarLimite((int) totalPaginas);
-        int limiteMemoria = generarLimite(memoriaGiB);
-        int limiteAlmacenamiento = generarLimite(almacenamientoGiB);
- 
-        int umbral = tam2;
-        
-        if (tam1 <= 0) {
-            System.err.println("tam1 debe ser mayor que cero.");
+        int capacidadMemoriaGiB =
+                (int) ((totalPaginas * tampaginaKiB) / (1024L * 1024L));
+
+        int capacidadAlmacenamientoGiB =
+                (int) ((totalBloques * tambloqueKiB) / (1024L * 1024L));
+
+        if (capacidadMemoriaGiB < 1 || capacidadAlmacenamientoGiB < 1) {
+            System.err.println(
+                "No existe capacidad suficiente para generar solicitudes válidas."
+            );
             return;
         }
+
+        int limiteProcesadores = generarLimite(procesadores);
+        int limiteMemoria = generarLimite(memoriaGiB);
+        int limiteAlmacenamiento = generarLimite(almacenamientoGiB);
+
+        int umbral = tam2;
+
         BuzonDeEntrada buzon = new BuzonDeEntrada(tam1, nu);
         ZonaDeEspera zonaEspera = new ZonaDeEspera(umbral);
         ControladorProcesador controladorProcesador = new ControladorProcesador(procesadores);
@@ -51,12 +78,13 @@ public class Main {
         ControladorAlmacenamiento controladorAlmacenamiento = new ControladorAlmacenamiento(almacenamientoTotalKB, tambloqueKiB);
 
         List<Usuarios> usuarios = new ArrayList<>();
-        for (int i = 1; i < nu; i++) {
+        for (int i = 1; i <= nu; i++) {
             usuarios.add(new Usuarios(i, base * i, buzon, limiteProcesadores, limiteMemoria, limiteAlmacenamiento));
         }
+        
 
         List<GestorDeSolicitud> gestores = new ArrayList<>();
-        for (int i = 1; i < ng; i++) {
+        for (int i = 0; i < ng; i++) {
             gestores.add(new GestorDeSolicitud(i, buzon, zonaEspera, controladorProcesador, controladorMemoria, controladorAlmacenamiento));
         }
 
@@ -104,8 +132,8 @@ public class Main {
         }
         System.out.println(ok ? "Sistema terminado correctamente." : "El sistema terminó con inconsistencias.");
 
-
     }
+
 
     public static Properties leerConfiguracion(String ruta) {
         Properties config = new Properties();
@@ -135,5 +163,12 @@ public class Main {
 
     private static int generarLimite(int capacidad) {
         return Math.max(1, (int) Math.round(0.75 * capacidad));
+    }
+
+    public static void validarMayorACero(int valor, String nombreParametro) {
+        if (valor <= 0) {
+            System.err.println(nombreParametro + " debe ser mayor que cero.");
+            System.exit(1);
+        }
     }
 }
