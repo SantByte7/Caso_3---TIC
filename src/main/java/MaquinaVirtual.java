@@ -23,23 +23,50 @@ public class MaquinaVirtual extends Thread {
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        if (!solicitudPosible()) {
+            System.err.println(
+                    "Solicitud imposible de atender: "
+                            + solicitud.getId());
+            return;
+        }
 
-            int versionActual = zonaEspera.getVersion();
+        boolean recursosReservados = false;
 
-            if (reservarRecursos()) {
-                ejecutar();
-                liberarRecursos();
-                zonaEspera.despertar();
+        try {
+            synchronized (zonaEspera) {
+                while (!recursosDisponibles() && !Thread.currentThread().isInterrupted()) {
+                    int versionActual = zonaEspera.getVersion();
+                    zonaEspera.esperar(this, versionActual);
+                }
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
+                recursosReservados = reservarRecursos();
+            }
+
+            if (!recursosReservados) {
                 return;
             }
-            boolean desperto = zonaEspera.esperar(this, versionActual);
+            ejecutar();
 
-            if (!desperto) {
-                return;
+        } finally {
+            if (recursosReservados) {
+                synchronized (zonaEspera) {
+                    liberarRecursos();
+                    zonaEspera.despertar();
+                }
             }
         }
-        
+    }
+
+    private boolean recursosDisponibles() {
+        int paginasNecesarias = ctrlMemoria.paginasNecesarias(solicitud.getMemoriaGIB());
+
+        int bloquesNecesarios = ctrlAlmacenamiento.bloquesNecesarios(solicitud.getAlmacenamientoGIB());
+
+        return ctrlProcesadores.getLibres() >= solicitud.getProcesadores()
+                && ctrlMemoria.getLibres() >= paginasNecesarias
+                && ctrlAlmacenamiento.getLibres() >= bloquesNecesarios;
     }
 
     public boolean reservarRecursos() {
@@ -62,6 +89,22 @@ public class MaquinaVirtual extends Thread {
         }
 
         return true;
+    }
+
+    private boolean solicitudPosible() {
+        int paginasNecesarias =
+                ctrlMemoria.paginasNecesarias(solicitud.getMemoriaGIB());
+
+        int bloquesNecesarios =
+                ctrlAlmacenamiento.bloquesNecesarios(
+                        solicitud.getAlmacenamientoGIB());
+
+        return solicitud.getProcesadores()
+                    <= ctrlProcesadores.getCapacidadTotal()
+                && paginasNecesarias
+                    <= ctrlMemoria.getCapacidadTotal()
+                && bloquesNecesarios
+                    <= ctrlAlmacenamiento.getCapacidadTotal();
     }
 
     public void liberarRecursos() {
