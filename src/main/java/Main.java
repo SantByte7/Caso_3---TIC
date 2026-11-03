@@ -43,9 +43,25 @@ public class Main {
 
         long totalPaginas = memoriaTotalKB / tampaginaKiB;
         long totalBloques = almacenamientoTotalKB / tambloqueKiB;
-        
+
         if (totalPaginas < 1 || totalBloques < 1) {
-            System.err.println("La memoria o el almacenamiento son demasiado pequeños para el tamaño de página/bloque especificado.");
+            System.err.println(
+                "La memoria o el almacenamiento son demasiado pequeños para "
+                + "el tamaño de página/bloque especificado."
+            );
+            return;
+        }
+
+        int capacidadMemoriaGiB =
+                (int) ((totalPaginas * tampaginaKiB) / (1024L * 1024L));
+
+        int capacidadAlmacenamientoGiB =
+                (int) ((totalBloques * tambloqueKiB) / (1024L * 1024L));
+
+        if (capacidadMemoriaGiB < 1 || capacidadAlmacenamientoGiB < 1) {
+            System.err.println(
+                "No existe capacidad suficiente para generar solicitudes válidas."
+            );
             return;
         }
 
@@ -117,6 +133,7 @@ public class Main {
         System.out.println(ok ? "Sistema terminado correctamente." : "El sistema terminó con inconsistencias.");
 
     }
+
 
     public static Properties leerConfiguracion(String ruta) {
         Properties config = new Properties();
