@@ -31,8 +31,8 @@ public class Usuarios extends Thread {
 
     public Solicitud generarSolicitud(int secuencial) {
         int procesadores = valorAleatorio(maxProcesadores);
-        int memoriaGIB = potenciaDeDosHasta(maxMemoriaGIB);
-        int almacenamientoGIB = parHasta(maxAlmacenamientoGIB);
+        int memoriaGIB = potenciaDeDosHasta(valorAleatorio(maxMemoriaGIB));
+        int almacenamientoGIB = parHasta(valorAleatorio(maxAlmacenamientoGIB));
 
         String idSolicitud = id + "-" + secuencial;
         return new Solicitud(idSolicitud, procesadores, memoriaGIB, almacenamientoGIB);
