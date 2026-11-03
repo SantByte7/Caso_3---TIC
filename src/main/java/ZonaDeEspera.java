@@ -38,7 +38,7 @@ public class ZonaDeEspera {
 
     public synchronized void despertar() {
         version++;
-        notifyAll();
+        notify();
     }
 
     public synchronized boolean hayMVsEnEspera() {
