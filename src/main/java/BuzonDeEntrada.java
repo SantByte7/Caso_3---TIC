@@ -1,5 +1,7 @@
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BuzonDeEntrada {
 
@@ -8,11 +10,14 @@ public class BuzonDeEntrada {
     private int usuariosActivos;
     private long solicitudesDepositadas;
     private long solicitudesRetiradas;
+    private long solicitudesCanceladas;
+    private final Set<String> idsSolicitudes;
 
     public BuzonDeEntrada(int capacidad, int usuariosActivos) {
         this.cola = new LinkedList<>();
         this.capacidad = capacidad;
         this.usuariosActivos = usuariosActivos;
+        this.idsSolicitudes = new HashSet<>();
     }
 
     public synchronized boolean depositar(Solicitud s) {
@@ -21,8 +26,13 @@ public class BuzonDeEntrada {
                 wait();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                solicitudesCanceladas++;
                 return false;
             }
+        }
+        if (!idsSolicitudes.add(s.getId())) {
+            throw new IllegalArgumentException(
+                    "Identificador de solicitud duplicado: " + s.getId());
         }
         cola.add(s);
         solicitudesDepositadas++;
@@ -68,5 +78,13 @@ public class BuzonDeEntrada {
 
     public synchronized long getSolicitudesRetiradas() {
         return solicitudesRetiradas;
+    }
+
+    public synchronized long getSolicitudesCanceladas() {
+        return solicitudesCanceladas;
+    }
+
+    public synchronized boolean idsUnicos() {
+        return idsSolicitudes.size() == solicitudesDepositadas;
     }
 }

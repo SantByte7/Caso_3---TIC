@@ -1,3 +1,5 @@
+import java.util.concurrent.ThreadLocalRandom;
+
 public class MaquinaVirtual extends Thread {
     
     private Solicitud solicitud;
@@ -105,7 +107,8 @@ public class MaquinaVirtual extends Thread {
     }
 
     public void ejecutar() {
-        int duracion = Tiempo_min + new java.util.Random().nextInt(Tiempo_max - Tiempo_min + 1);
+        int duracion = ThreadLocalRandom.current()
+                .nextInt(Tiempo_min, Tiempo_max + 1);
         try {
             Thread.sleep(duracion);
         } catch (InterruptedException e) {

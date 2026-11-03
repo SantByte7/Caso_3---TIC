@@ -140,6 +140,29 @@ public class Main {
             );
             ok = false;
         }
+        if (!buzon.idsUnicos()) {
+            System.out.println("FALLO: existen IDs de solicitud duplicados.");
+            ok = false;
+        }
+        if (buzon.getSolicitudesCanceladas() != 0) {
+            System.out.println(
+                    "FALLO: solicitudes canceladas "
+                    + buzon.getSolicitudesCanceladas()
+            );
+            ok = false;
+        }
+        for (Usuarios usuario : usuarios) {
+            if (usuario.isAlive()) {
+                System.out.println("FALLO: quedó un usuario activo.");
+                ok = false;
+            }
+        }
+        for (GestorDeSolicitud gestor : gestores) {
+            if (gestor.isAlive()) {
+                System.out.println("FALLO: quedó un gestor activo.");
+                ok = false;
+            }
+        }
         if (zonaEspera.cantidadEnEspera() != 0) {
             System.out.println("FALLO: la zona de espera no quedó vacía.");
             ok = false;

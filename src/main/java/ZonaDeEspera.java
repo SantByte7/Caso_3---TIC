@@ -20,7 +20,6 @@ public class ZonaDeEspera {
                     wait(); 
                 } return true ; 
             } catch (InterruptedException e) {
-                mvsEnEspera.remove(mv);
                 Thread.currentThread().interrupt();
                 return false;
             } finally {
