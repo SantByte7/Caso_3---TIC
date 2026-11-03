@@ -66,8 +66,14 @@ public class Main {
         }
 
         int limiteProcesadores = generarLimite(procesadores);
-        int limiteMemoria = generarLimite(memoriaGiB);
-        int limiteAlmacenamiento = generarLimite(almacenamientoGiB);
+        /*
+         * La memoria y el almacenamiento disponibles realmente dependen de
+         * cuántas páginas y bloques caben completos. Usar estas capacidades
+         * efectivas evita generar solicitudes mayores que las que los
+         * controladores pueden representar.
+         */
+        int limiteMemoria = generarLimite(capacidadMemoriaGiB);
+        int limiteAlmacenamiento = generarLimite(capacidadAlmacenamientoGiB);
 
         int umbral = tam2;
 

@@ -37,6 +37,12 @@ public class BuzonDeEntrada {
 
     public synchronized void reportarTerminacion() {
         usuariosActivos--;
+        /*
+         * Un gestor puede estar comprobando el estado del buzón mientras el
+         * último usuario termina. Lo despertamos para que evalúe de nuevo la
+         * condición de terminación sin depender únicamente de yield().
+         */
+        notifyAll();
     }
 
     public synchronized boolean hayUsuariosActivos() {
