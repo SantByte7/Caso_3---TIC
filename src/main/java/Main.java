@@ -34,9 +34,9 @@ public class Main {
             return;
         }
 
-        int limiteProcesadores = generarLimite(procesadores);
-        int limiteMemoria = generarLimite((int) totalPaginas);
-        int limiteAlmacenamiento = generarLimite((int) totalBloques);
+        int limiteProcesadores = generarLimite((int) totalPaginas);
+        int limiteMemoria = generarLimite(memoriaGiB);
+        int limiteAlmacenamiento = generarLimite(almacenamientoGiB);
  
         int umbral = tam2;
         
@@ -51,12 +51,12 @@ public class Main {
         ControladorAlmacenamiento controladorAlmacenamiento = new ControladorAlmacenamiento(almacenamientoTotalKB, tambloqueKiB);
 
         List<Usuarios> usuarios = new ArrayList<>();
-        for (int i = 0; i < nu; i++) {
+        for (int i = 1; i < nu; i++) {
             usuarios.add(new Usuarios(i, base * i, buzon, limiteProcesadores, limiteMemoria, limiteAlmacenamiento));
         }
 
         List<GestorDeSolicitud> gestores = new ArrayList<>();
-        for (int i = 0; i < ng; i++) {
+        for (int i = 1; i < ng; i++) {
             gestores.add(new GestorDeSolicitud(i, buzon, zonaEspera, controladorProcesador, controladorMemoria, controladorAlmacenamiento));
         }
 
