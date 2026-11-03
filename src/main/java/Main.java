@@ -65,9 +65,10 @@ public class Main {
         for (int i = 1; i <= nu; i++) {
             usuarios.add(new Usuarios(i, base * i, buzon, limiteProcesadores, limiteMemoria, limiteAlmacenamiento));
         }
+        
 
         List<GestorDeSolicitud> gestores = new ArrayList<>();
-        for (int i = 0; i <= ng; i++) {
+        for (int i = 0; i < ng; i++) {
             gestores.add(new GestorDeSolicitud(i, buzon, zonaEspera, controladorProcesador, controladorMemoria, controladorAlmacenamiento));
         }
 

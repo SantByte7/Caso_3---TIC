@@ -23,6 +23,7 @@ public class BuzonDeEntrada {
             }
         }
         cola.add(s);
+        
     }
 
     public synchronized Solicitud retirar() {

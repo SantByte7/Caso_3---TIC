@@ -12,24 +12,24 @@ public class ZonaDeEspera {
         this.version = 0;
     }
 
-    public synchronized void esperar(MaquinaVirtual mv, int versionActual) {
+    public synchronized boolean esperar(MaquinaVirtual mv, int versionActual) {
         mvsEnEspera.add(mv);
 
-        while (version == versionActual) {
-            try {
-                wait();
+        try {
+                while (version == versionActual) {
+                    wait(); 
+                } return true ; 
             } catch (InterruptedException e) {
                 mvsEnEspera.remove(mv);
                 Thread.currentThread().interrupt();
-                return;
+                return false;
+            } finally {
+                mvsEnEspera.remove(mv);
+                if (mvsEnEspera.isEmpty()) {
+                    notifyAll();
+                }
             }
-        }
-
-        mvsEnEspera.remove(mv);
-        if (mvsEnEspera.isEmpty()) {
-            notifyAll();
-        }
-
+        
     }
 
     public synchronized int getVersion() {
@@ -38,7 +38,7 @@ public class ZonaDeEspera {
 
     public synchronized void despertar() {
         version++;
-        notify();
+        notifyAll();
     }
 
     public synchronized boolean hayMVsEnEspera() {

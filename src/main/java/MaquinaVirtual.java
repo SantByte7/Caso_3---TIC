@@ -23,17 +23,23 @@ public class MaquinaVirtual extends Thread {
 
     @Override
     public void run() {
-        boolean config = false;
-        while (!config) {
+        while (!Thread.currentThread().isInterrupted()) {
+
             int versionActual = zonaEspera.getVersion();
-            config = reservarRecursos();
-            if (!config) {
-                zonaEspera.esperar(this, versionActual);
+
+            if (reservarRecursos()) {
+                ejecutar();
+                liberarRecursos();
+                zonaEspera.despertar();
+                return;
+            }
+            boolean desperto = zonaEspera.esperar(this, versionActual);
+
+            if (!desperto) {
+                return;
             }
         }
-        ejecutar();
-        liberarRecursos();
-        zonaEspera.despertar();
+        
     }
 
     public boolean reservarRecursos() {
