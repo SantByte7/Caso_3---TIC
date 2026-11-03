@@ -1,6 +1,7 @@
 public class ControladorAlmacenamiento {
-    private MaquinaVirtual[] duenos;
-    private int tamBloqueKB;
+    private final MaquinaVirtual[] duenos;
+    private final int tamBloqueKB;
+    private final int capacidadTotal;
     private int libres;
 
     public ControladorAlmacenamiento(long almacenamientoTotalKB, int tamBloqueKB) {
@@ -8,6 +9,7 @@ public class ControladorAlmacenamiento {
         int totalBloques = (int) (almacenamientoTotalKB / tamBloqueKB);
 
         this.duenos = new MaquinaVirtual[totalBloques];
+        this.capacidadTotal = totalBloques;
         this.libres = totalBloques;
     }
 
@@ -55,7 +57,6 @@ public class ControladorAlmacenamiento {
     }
 
     public int getCapacidadTotal() {
-        // TODO Auto-generated method stub
-        return duenos.length;
+        return capacidadTotal;
     }
 }

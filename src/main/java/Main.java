@@ -41,6 +41,15 @@ public class Main {
         long memoriaTotalKB = (long) memoriaGiB * 1024 * 1024;
         long almacenamientoTotalKB = (long) almacenamientoGiB * 1024 * 1024;
 
+        if (memoriaTotalKB % tampaginaKiB != 0) {
+            System.err.println("La memoria debe ser múltiplo del tamaño de página.");
+            return;
+        }
+        if (almacenamientoTotalKB % tambloqueKiB != 0) {
+            System.err.println("El almacenamiento debe ser múltiplo del tamaño de bloque.");
+            return;
+        }
+
         long totalPaginas = memoriaTotalKB / tampaginaKiB;
         long totalBloques = almacenamientoTotalKB / tambloqueKiB;
 
@@ -66,8 +75,14 @@ public class Main {
         }
 
         int limiteProcesadores = generarLimite(procesadores);
-        int limiteMemoria = generarLimite(memoriaGiB);
-        int limiteAlmacenamiento = generarLimite(almacenamientoGiB);
+        /*
+         * La memoria y el almacenamiento disponibles realmente dependen de
+         * cuántas páginas y bloques caben completos. Usar estas capacidades
+         * efectivas evita generar solicitudes mayores que las que los
+         * controladores pueden representar.
+         */
+        int limiteMemoria = generarLimite(capacidadMemoriaGiB);
+        int limiteAlmacenamiento = generarLimite(capacidadAlmacenamientoGiB);
 
         int umbral = tam2;
 
@@ -84,7 +99,7 @@ public class Main {
         
 
         List<GestorDeSolicitud> gestores = new ArrayList<>();
-        for (int i = 0; i < ng; i++) {
+        for (int i = 1; i <= ng; i++) {
             gestores.add(new GestorDeSolicitud(i, buzon, zonaEspera, controladorProcesador, controladorMemoria, controladorAlmacenamiento));
         }
 
@@ -110,9 +125,43 @@ public class Main {
         }
 
         boolean ok = true;
+        long solicitudesEsperadas = (long) base * nu * (nu + 1) / 2;
         if (!buzon.estaVacio()) {
             System.out.println("FALLO: el buzón no quedó vacío.");
             ok = false;
+        }
+        if (buzon.getSolicitudesDepositadas() != solicitudesEsperadas
+                || buzon.getSolicitudesRetiradas() != solicitudesEsperadas) {
+            System.out.println(
+                    "FALLO: solicitudes procesadas "
+                    + buzon.getSolicitudesRetiradas()
+                    + " de "
+                    + solicitudesEsperadas
+            );
+            ok = false;
+        }
+        if (!buzon.idsUnicos()) {
+            System.out.println("FALLO: existen IDs de solicitud duplicados.");
+            ok = false;
+        }
+        if (buzon.getSolicitudesCanceladas() != 0) {
+            System.out.println(
+                    "FALLO: solicitudes canceladas "
+                    + buzon.getSolicitudesCanceladas()
+            );
+            ok = false;
+        }
+        for (Usuarios usuario : usuarios) {
+            if (usuario.isAlive()) {
+                System.out.println("FALLO: quedó un usuario activo.");
+                ok = false;
+            }
+        }
+        for (GestorDeSolicitud gestor : gestores) {
+            if (gestor.isAlive()) {
+                System.out.println("FALLO: quedó un gestor activo.");
+                ok = false;
+            }
         }
         if (zonaEspera.cantidadEnEspera() != 0) {
             System.out.println("FALLO: la zona de espera no quedó vacía.");

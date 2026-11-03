@@ -1,9 +1,11 @@
 public class ControladorProcesador {
-    private MaquinaVirtual[] duenos;
+    private final MaquinaVirtual[] duenos;
+    private final int capacidadTotal;
     private int libres;
 
     public ControladorProcesador(int totalprocesadores) {
         this.duenos = new MaquinaVirtual[totalprocesadores];
+        this.capacidadTotal = totalprocesadores;
         this.libres = totalprocesadores;
     }
 
@@ -38,7 +40,6 @@ public class ControladorProcesador {
     }
 
     public int getCapacidadTotal() {
-        // TODO Auto-generated method stub
-        return duenos.length;
+        return capacidadTotal;
     }
 }
