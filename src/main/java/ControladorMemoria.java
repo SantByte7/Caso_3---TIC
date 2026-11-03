@@ -1,6 +1,7 @@
 public class ControladorMemoria {
-    private MaquinaVirtual[] duenos;
-    private int tamPaginaKB;
+    private final MaquinaVirtual[] duenos;
+    private final int tamPaginaKB;
+    private final int capacidadTotal;
     private int libres;
 
     public ControladorMemoria(long memoriaTotalKB, int tamPaginaKB) {
@@ -8,6 +9,7 @@ public class ControladorMemoria {
         int totalpaginas = (int) (memoriaTotalKB / tamPaginaKB);
 
         this.duenos = new MaquinaVirtual[totalpaginas];
+        this.capacidadTotal = totalpaginas;
         this.libres = totalpaginas;
     }
 
@@ -56,6 +58,6 @@ public class ControladorMemoria {
     }
 
     public int getCapacidadTotal() {
-        return duenos.length;
+        return capacidadTotal;
     }
 }
