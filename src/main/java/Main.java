@@ -28,6 +28,7 @@ public class Main {
 
         long totalPaginas = memoriaTotalKB / tampaginaKiB;
         long totalBloques = almacenamientoTotalKB / tambloqueKiB;
+        
         if (totalPaginas < 1 || totalBloques < 1) {
             System.err.println("La memoria o el almacenamiento son demasiado pequeños para el tamaño de página/bloque especificado.");
             return;

@@ -38,7 +38,7 @@ public class Usuarios extends Thread {
         return new Solicitud(idSolicitud, procesadores, memoriaGIB, almacenamientoGIB);
     }
 
-    // Entero entre 1 y limite (ambos inclusive)
+    // Entero entre 1 y limite (ambos inclusivos)
     private int valorAleatorio(int limite) {
         return random.nextInt(limite) + 1;
     }
