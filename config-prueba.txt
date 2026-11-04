@@ -2,14 +2,13 @@
 # Memoria y almacenamiento: GiB
 # Página y bloque: KiB
 
-NU = 3
+NU = 2
 base = 1
-NG = 1 
-tam1 = 1
+NG = 2 
+tam1 = 2
 tam2 = 2
-procesadores = 4
-memoriaGiB = 4
+procesadores = 2
+memoriaGiB = 2
 tamPaginaKB = 1048576
-almacenamientoGiB = 4
+almacenamientoGiB = 2
 tambloqueKiB = 1048576
-

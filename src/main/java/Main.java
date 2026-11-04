@@ -118,6 +118,8 @@ public class Main {
             return;
         }
 
+        imprimirResumen(buzon);
+
         boolean ok = true;
         long solicitudesEsperadas = (long) base * nu * (nu + 1) / 2;
         if (!buzon.estaVacio()) {
@@ -175,6 +177,16 @@ public class Main {
         }
         System.out.println(ok ? "Sistema terminado correctamente." : "El sistema terminó con inconsistencias.");
 
+    }
+
+    private static void imprimirResumen(BuzonDeEntrada buzon) {
+        System.out.println("solicitudes depositadas = "
+                + buzon.getSolicitudesDepositadas());
+        System.out.println("solicitudes retiradas = "
+                + buzon.getSolicitudesRetiradas());
+        System.out.println("solicitudes canceladas = "
+                + buzon.getSolicitudesCanceladas());
+        System.out.println(buzon.estaVacio() ? "buzón vacío" : "buzón no vacío");
     }
 
 
