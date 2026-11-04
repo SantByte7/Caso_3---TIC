@@ -75,12 +75,6 @@ public class Main {
         }
 
         int limiteProcesadores = generarLimite(procesadores);
-        /*
-         * La memoria y el almacenamiento disponibles realmente dependen de
-         * cuántas páginas y bloques caben completos. Usar estas capacidades
-         * efectivas evita generar solicitudes mayores que las que los
-         * controladores pueden representar.
-         */
         int limiteMemoria = generarLimite(capacidadMemoriaGiB);
         int limiteAlmacenamiento = generarLimite(capacidadAlmacenamientoGiB);
 
